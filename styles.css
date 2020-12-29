@@ -1,0 +1,17 @@
+div.battlescribe li.rootselection {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.force ul .category:first-child h4 {
+  display: none;
+}
+
+.force ul .category:first-child p:first-of-type span {
+  display: none;
+}
+
+.force ul .category:first-child p:last-of-type {
+  display: none;
+}
