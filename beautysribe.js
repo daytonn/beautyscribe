@@ -28,8 +28,33 @@ function setupContainer() {
   return container
 }
 
-function getTitle() {
-  return document.querySelector(".battlescribe h1").innerText
+function createTitle() {
+  const fullTitle = document
+    .querySelector(".battlescribe h1")
+    .innerText
+  const points = fullTitle.match(/\[(\d+)pts\]/)[1]
+  const system = fullTitle.match(/\((.+)\)/)[1]
+  const title = fullTitle.replace(/\s\(.+\)\s\[\d+pts\]\s?/, " ")
+  const config = getConfiguration()
+
+
+  return createElement(
+    "div",
+    [
+      createElement("h1", [
+        title,
+
+      ]),
+      createElement("p", [
+        createElement("p", [
+          config,
+          createElement("span", `(${points} points)`, { className: "list-points" })
+        ], { className: "list-config" }),
+        createElement("p", system, { className: "list-system" }),
+      ], { className: "list-system-info"}),
+    ],
+    { className: "list-title" }
+  )
 }
 
 function getConfiguration() {
@@ -43,7 +68,7 @@ function getConfiguration() {
 
 
 function insertConfiguration(container, config) {
-  const h1 = container.querySelector("h1")
+  const h1 = container.querySelector(".list-title")
   const className = "list-configuration"
   const configuration = createElement("p", config, { className })
 
@@ -193,14 +218,26 @@ function addCell(row, contents) {
 
 
 function createAbilitiesTable({ abilities }) {
-  const { table, head, body } = createTable({ className: "abilities", header: false })
-  abilities.map(({ name, description }) => {
-    const row = body.insertRow()
-    const nameCell = addCell(row, name)
-    const descriptionCell = addCell(row, description)
-  })
+  const classes = ["unit-abilities", "flex-table"]
 
-  return table
+  return createElement(
+    "div",
+    abilities.reduce((acc, { name, description }) => {
+      return [
+        ...acc,
+        createElement(
+          "p",
+          [
+            createElement("strong", name),
+            createElement("br"),
+            description,
+          ],
+          { className: "unit-ability-description" }
+        ),
+        document.createElement("hr"),
+      ]
+    }, []),
+    { classes })
 }
 
 function isSpecialExpCheckbox(n) {
@@ -309,11 +346,16 @@ function getAbilities() {
 
 function beautify() {
   const container = setupContainer()
-  container.appendChild(createElement("h1", getTitle()))
-  insertConfiguration(container, getConfiguration())
+  container.appendChild(createTitle())
   insertUnits(container, getUnits())
 
-  // document.querySelector("div.battlescribe").remove()
+  const link = document.createElement("link")
+  link.setAttribute("rel", "stylesheet")
+  link.setAttribute("type", "text/css")
+  link.setAttribute("media", "all")
+  link.setAttribute("href", "https://raw.githubusercontent.com/daytonn/beautyscribe/main/print.css")
+  document.getElementsByTagName("head")[0].appendChild(link)
+
   console.log("beautified!")
 }
 
